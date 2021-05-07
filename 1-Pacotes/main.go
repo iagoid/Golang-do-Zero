@@ -14,6 +14,7 @@ func main() {
 	// As funções que eu quero chamar precisam INICIAR COM LETRA MAIUSCULA
 	// Porém eu posso chamar a função com LETRA MINUSCULA que está num mesmo pacote(escrever2 no auxiliar)
 	// Uma boa pratica é na função importada fazer um comentário em cima dela explicando o que ela faz
+	// juntamente com o nome da função
 	auxiliar.Escrever()
 
 	err := checkmail.ValidateFormat("iagoid01@gmail.com")
