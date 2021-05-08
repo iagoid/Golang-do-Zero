@@ -1,0 +1,199 @@
+// Migrate the schema
+db.AutoMigrate(&Product{})
+
+
+ASSOCIATION TAGS
+foreignKey			Specifies column name of the current model that is used as a foreign key to the join table
+references			Specifies column name of the reference’s table that is mapped to the foreign key of the join table
+polymorphic			Specifies polymorphic type such as model name
+polymorphicValue	Specifies polymorphic value, default table name
+many2many			Specifies join table name
+joinForeignKey		Specifies foreign key column name of join table that maps to the current table
+joinReferences		Specifies foreign key column name of join table that maps to the reference’s table
+constraint			Relations constraint, e.g: OnUpdate,OnDelete
+
+
+------------------------------------------------------------------ CREATE ------------------------------------------------------------------
+
+Create a record and assign a value to the fields specified.
+db.Select("Name", "Age", "CreatedAt").Create(&user)
+// INSERT INTO `users` (`name`,`age`,`created_at`) VALUES ("jinzhu", 18, "2020-07-04 11:05:21.775")
+
+// batch insert from `[]map[string]interface{}{}`
+db.Model(&User{}).Create([]map[string]interface{}{
+  {"Name": "jinzhu_1", "Age": 18},
+  {"Name": "jinzhu_2", "Age": 20},
+})
+
+Create With Associations
+db.Create(&User{
+  Name: "jinzhu",
+  CreditCard: CreditCard{Number: "411111111111"}
+})
+// INSERT INTO `users` ...
+// INSERT INTO `credit_cards` ...
+
+
+You can skip saving associations with Select, Omit, for example:
+db.Omit("CreditCard").Create(&user)
+
+// skip all associations
+db.Omit(clause.Associations).Create(&user)
+
+------------------------------------------------------------------ QUERY ------------------------------------------------------------------
+db.First(&user)
+// SELECT * FROM users ORDER BY id LIMIT 1;
+
+db.Take(&user)
+// SELECT * FROM users LIMIT 1;
+
+db.Last(&user)
+// SELECT * FROM users ORDER BY id DESC LIMIT 1;
+
+result := db.First(&user)
+result.RowsAffected // returns found records count
+result.Error        // returns error
+
+// check error ErrRecordNotFound
+errors.Is(result.Error, gorm.ErrRecordNotFound)
+
+
+
+// order by first field
+type Language struct {
+  Code string
+  Name string
+}
+db.First(&Language{})
+// SELECT * FROM `languages` ORDER BY `languages`.`code` LIMIT 1
+
+
+
+// Get first matched record
+db.Where("name = ?", "jinzhu").First(&user)
+// SELECT * FROM users WHERE name = 'jinzhu' ORDER BY id LIMIT 1;
+
+// Get all matched records
+db.Where("name <> ?", "jinzhu").Find(&users)
+// SELECT * FROM users WHERE name <> 'jinzhu';
+
+
+
+// IN
+db.Where("name IN ?", []string{"jinzhu", "jinzhu 2"}).Find(&users)
+// SELECT * FROM users WHERE name IN ('jinzhu','jinzhu 2');
+
+// LIKE
+db.Where("name LIKE ?", "%jin%").Find(&users)
+// SELECT * FROM users WHERE name LIKE '%jin%';
+
+// AND
+db.Where("name = ? AND age >= ?", "jinzhu", "22").Find(&users)
+// SELECT * FROM users WHERE name = 'jinzhu' AND age >= 22;
+
+// Time
+db.Where("updated_at > ?", lastWeek).Find(&users)
+// SELECT * FROM users WHERE updated_at > '2000-01-01 00:00:00';
+
+// BETWEEN
+db.Where("created_at BETWEEN ? AND ?", lastWeek, today).Find(&users)
+// SELECT * FROM users WHERE created_at BETWEEN '2000-01-01 00:00:00' AND '2000-01-08 00:00:00';
+
+
+
+
+db.Where(&User{Name: "jinzhu", Age: 20}).First(&user)
+// SELECT * FROM users WHERE name = "jinzhu" AND age = 20 ORDER BY id LIMIT 1;
+
+
+When searching with struct, you could use its field name or dbname as arguments to specify the searching fields, for example:
+db.Where(&User{Name: "jinzhu"}, "name", "Age").Find(&users)
+// SELECT * FROM users WHERE name = "jinzhu" AND age = 0;
+
+
+
+
+db.Find(&users, "name <> ? AND age > ?", "jinzhu", 20)
+// SELECT * FROM users WHERE name <> "jinzhu" AND age > 20;
+
+// Struct
+db.Find(&users, User{Age: 20})
+// SELECT * FROM users WHERE age = 20;
+
+
+
+
+Not Conditions
+db.Not("name = ?", "jinzhu").First(&user)
+// SELECT * FROM users WHERE NOT name = "jinzhu" ORDER BY id LIMIT 1;
+
+// Not Conditions Struct
+db.Not(User{Name: "jinzhu", Age: 18}).First(&user)
+// SELECT * FROM users WHERE name <> "jinzhu" AND age <> 18 ORDER BY id LIMIT 1;
+
+
+
+Or Conditions
+db.Where("role = ?", "admin").Or("role = ?", "super_admin").Find(&users)
+// SELECT * FROM users WHERE role = 'admin' OR role = 'super_admin';
+
+db.Where("name = 'jinzhu'").Or(User{Name: "jinzhu 2", Age: 18}).Find(&users)
+// SELECT * FROM users WHERE name = 'jinzhu' OR (name = 'jinzhu 2' AND age = 18);
+
+
+
+Selecting Specific Fields
+db.Select("name", "age").Find(&users)
+// SELECT name, age FROM users;
+
+
+
+Order
+db.Order("age desc, name").Find(&users)
+// SELECT * FROM users ORDER BY age desc, name;
+
+
+
+LIMIT
+db.Limit(3).Find(&users)
+// SELECT * FROM users LIMIT 3;
+
+
+Offset specify the number of records to skip before starting to return the records
+db.Offset(3).Find(&users)
+// SELECT * FROM users OFFSET 3;
+
+
+
+Group & Having
+type result struct {
+  Date  time.Time
+  Total int
+}
+
+db.Model(&User{}).Select("name, sum(age) as total").Where("name LIKE ?", "group%").Group("name").First(&result)
+// SELECT name, sum(age) as total FROM `users` WHERE name LIKE "group%" GROUP BY `name`
+
+
+db.Model(&User{}).Select("name, sum(age) as total").Group("name").Having("name = ?", "group").Find(&result)
+// SELECT name, sum(age) as total FROM `users` GROUP BY `name` HAVING name = "group"
+
+
+Selecting distinct values from the model
+db.Distinct("name", "age").Order("name, age desc").Find(&results)
+
+------------------------------------------------------------------ HOOKS ------------------------------------------------------------------
+ (AÇÕES ANTES/DEPOIS DA AÇÃO NO BANCO DE DADOS)
+PODE TER EM TUDO NO CRUD
+func (u *User) AfterCreate(tx *gorm.DB) (err error) {
+  if u.ID == 1 {
+    tx.Model(u).Update("role", "admin")
+  }
+  return
+}
+
+If you want to skip Hooks methods, you can use the SkipHooks session mode, for example:
+DB.Session(&gorm.Session{SkipHooks: true}).Create(&user)
+
+
+
