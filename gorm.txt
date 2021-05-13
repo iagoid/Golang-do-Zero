@@ -1,5 +1,51 @@
 // Migrate the schema
 db.AutoMigrate(&Product{})
+db.AutoMigrate(&User{}, &Product{}, &Order{})
+
+// Check table for `User` exists or not
+db.Migrator().HasTable(&User{})
+db.Migrator().HasTable("users")
+
+// Drop table if exists (will ignore or delete foreign key constraints when dropping)
+db.Migrator().DropTable(&User{})
+db.Migrator().DropTable("users")
+
+// Rename old table to new table
+db.Migrator().RenameTable(&User{}, &UserInfo{})
+db.Migrator().RenameTable("users", "user_infos")
+
+
+
+
+COLUMN
+type User struct {
+  Name string
+}
+
+// Add name field
+db.Migrator().AddColumn(&User{}, "Name")
+// Drop name field
+db.Migrator().DropColumn(&User{}, "Name")
+// Alter name field
+db.Migrator().AlterColumn(&User{}, "Name")
+// Check column exists
+db.Migrator().HasColumn(&User{}, "Name")
+
+
+
+
+GENERIC DATABASE MIGRATIONS
+db.DB()
+
+
+
+
+
+
+DEBUG 
+db.Debug().Where("name = ?", "jinzhu").First(&User{})
+
+
 
 
 ASSOCIATION TAGS
@@ -11,6 +57,307 @@ many2many			Specifies join table name
 joinForeignKey		Specifies foreign key column name of join table that maps to the current table
 joinReferences		Specifies foreign key column name of join table that maps to the reference’s table
 constraint			Relations constraint, e.g: OnUpdate,OnDelete
+
+
+
+---------------------------------------------------------------- PERTENCE A ----------------------------------------------------------------
+---> usuário que pertence à empresa, que usa CompanyRefer como chave estrangeira
+type User struct {
+  gorm.Model
+  CompanyRefer int
+  Company      Company `gorm:"foreignKey:CompanyRefer"`
+}
+
+type Company struct {
+  ID   int
+  Name string
+}
+
+
+
+--> Quando você atribui um usuário a uma empresa, o GORM salva o ID da empresa no campo CompanyID do usuário. Code é uma referencia
+type User struct {
+  gorm.Model
+  CompanyID string
+  Company   Company `gorm:"references:Code"`
+}
+
+type Company struct {
+  ID   int
+  Code string
+  Name string
+}
+
+
+
+-->Você pode configurar as restrições OnUpdate, OnDelete com restrição de tag, ela será criada ao migrar com GORM, por exemplo: 
+type User struct {
+  gorm.Model
+  Name      string
+  CompanyID int
+  Company   Company `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+}
+
+type Company struct {
+  ID   int
+  Name string
+}
+----------------------------------------------------------------- POSSUI UM ----------------------------------------------------------------
+type User struct {
+  gorm.Model
+  CreditCard CreditCard
+}
+
+type CreditCard struct {
+  gorm.Model
+  Number string
+  UserID uint
+}
+
+O nome do campo é gerado com um tipo de modelo mais sua chave primária, para o exemplo seria UserID. Quando você dá um cartão de crédito ao usuário, ele salva a ID do usuário no campo UserID .
+Se quiser usar outro campo para salvar o relacionamento, você pode alterá-lo com a tag foreignKey, por exemplo: 
+Para ter um relacionamento, o campo de chave estrangeira também deve existir, o proprietário salvará a chave primária do modelo que pertence a ele neste campo.
+
+type User struct {
+  gorm.Model
+  CreditCard CreditCard `gorm:"foreignKey:UserName"`
+  // use UserName as foreign key
+}
+
+type CreditCard struct {
+  gorm.Model
+  Number   string
+  UserName string
+}
+
+
+Por padrão, a entidade propriedade salvará a chave primária do modelo em uma chave estrangeira, você pode alterar para salvar o valor de outro campo, como usar Name para o exemplo abaixo.
+Você pode alterá-lo com referências de tag, por exemplo:
+
+type User struct {
+  gorm.Model
+  Name       string     `gorm:"index"`
+  CreditCard CreditCard `gorm:"foreignkey:UserName;references:name"`
+}
+
+type CreditCard struct {
+  gorm.Model
+  Number   string
+  UserName string
+}
+
+
+--------------------------------------------------------------- POSSUI VÁRIOS --------------------------------------------------------------
+Uma associação POSSUI VÁRIOS configura uma conexão um-para-muitos com outro modelo, ao contrário de ter um, o proprietário pode ter zero ou muitas instâncias de modelos. Por exemplo, se seu aplicativo inclui usuários e cartão de crédito, e cada usuário pode ter vários cartões de crédito. 
+type User struct {
+  gorm.Model
+  CreditCards []CreditCard
+}
+
+type CreditCard struct {
+  gorm.Model
+  Number string
+  UserID uint
+}
+
+
+Para definir um relacionamento com muitos, deve existir uma chave estrangeira. O nome da chave estrangeira padrão é o nome do tipo do proprietário mais o nome de seu campo de chave primária
+Por exemplo, para definir um modelo que pertence ao usuário, a chave estrangeira deve ser ID do usuário.
+Para usar outro campo como chave estrangeira, você pode personalizá-lo com uma tag foreignKey, por exemplo: 
+
+type User struct {
+  gorm.Model
+  CreditCards []CreditCard `gorm:"foreignKey:UserRefer"`
+}
+
+type CreditCard struct {
+  gorm.Model
+  Number    string
+  UserRefer uint
+}
+
+Quando você atribui cartões de crédito a um usuário, o GORM salva a ID do usuário no campo UserID dos cartões de crédito.
+Você pode alterá-lo com referências de tag, por exemplo: 
+type User struct {
+  gorm.Model
+  MemberNumber string
+  CreditCards  []CreditCard `gorm:"foreignKey:UserNumber;references:MemberNumber"`
+}
+
+type CreditCard struct {
+  gorm.Model
+  Number     string
+  UserNumber string
+}
+------------------------------------------------------------ Vários para vários ----------------------------------------------------------- 
+Muitos para muitos adicionam uma tabela de junção entre dois modelos.
+
+Por exemplo, se seu aplicativo inclui usuários e idiomas, e um usuário pode falar muitos idiomas e muitos usuários podem falar um idioma específico. 
+type User struct {
+  gorm.Model
+  Languages []Language `gorm:"many2many:user_languages;"`
+}
+
+type Language struct {
+  gorm.Model
+  Name string
+}
+// O usuário possui e pertence a muitos idiomas, `user_languages` é a tabela de junção 
+
+
+
+
+
+type User struct {
+  gorm.Model
+  Languages []*Language `gorm:"many2many:user_languages;"`
+}
+
+type Language struct {
+  gorm.Model
+  Name string
+  Users []*User `gorm:"many2many:user_languages;"`
+}
+
+
+
+
+
+
+type User struct {
+  gorm.Model
+  Languages []Language `gorm:"many2many:user_speaks;"`
+}
+
+type Language struct {
+  Code string `gorm:"primarykey"`
+  Name string
+}
+
+// CREATE TABLE `user_speaks` (`user_id` integer,`language_code` text,PRIMARY KEY (`user_id`,`language_code`),CONSTRAINT `fk_user_speaks_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,CONSTRAINT `fk_user_speaks_language` FOREIGN KEY (`language_code`) REFERENCES `languages`(`code`) ON DELETE SET NULL ON UPDATE CASCADE)
+
+
+
+
+
+
+
+
+Você tem permissão para substituir as chaves estrangeiras padrão, para especificar várias chaves estrangeiras, apenas separe o nome dessas chaves por vírgulas, por exemplo: 
+
+type Tag struct {
+  ID     uint   `gorm:"primaryKey"`
+  Locale string `gorm:"primaryKey"`
+  Value  string
+}
+
+type Blog struct {
+  ID         uint   `gorm:"primaryKey"`
+  Locale     string `gorm:"primaryKey"`
+  Subject    string
+  Body       string
+  Tags       []Tag `gorm:"many2many:blog_tags;"`
+  LocaleTags []Tag `gorm:"many2many:locale_blog_tags;ForeignKey:id,locale;References:id"`
+  SharedTags []Tag `gorm:"many2many:shared_blog_tags;ForeignKey:id;References:id"`
+}
+
+// Join Table: blog_tags
+//   foreign key: blog_id, reference: blogs.id
+//   foreign key: blog_locale, reference: blogs.locale
+//   foreign key: tag_id, reference: tags.id
+//   foreign key: tag_locale, reference: tags.locale
+
+// Join Table: locale_blog_tags
+//   foreign key: blog_id, reference: blogs.id
+//   foreign key: blog_locale, reference: blogs.locale
+//   foreign key: tag_id, reference: tags.id
+
+// Join Table: shared_blog_tags
+//   foreign key: blog_id, reference: blogs.id
+//   foreign key: tag_id, reference: tags.id
+
+--------------------------------------------------------------- Pre-loading --------------------------------------------------------------- 
+O Preload carrega os dados de associação em uma consulta separada, o Join Preload carrega os dados de associação usando a junção interna, por exemplo: 
+db.Joins("Company").Joins("Manager").Joins("Account").First(&user, 1)
+db.Joins("Company").Joins("Manager").Joins("Account").First(&user, "users.name = ?", "jinzhu")
+db.Joins("Company").Joins("Manager").Joins("Account").Find(&users, "users.id IN ?", []int{1,2,3,4,5})
+
+
+
+As associações não pré-carregam associações aninhadas, mas você pode usá-las com o pré-carregamento aninhado, por exemplo: 
+db.Preload("Orders.OrderItems.Product").Preload(clause.Associations).Find(&users)
+
+
+
+
+Preload with conditions
+db.Preload("Orders", "state NOT IN (?)", "cancelled").Find(&users)
+// SELECT * FROM users;
+// SELECT * FROM orders WHERE user_id IN (1,2,3,4) AND state NOT IN ('cancelled');
+
+db.Where("state = ?", "active").Preload("Orders", "state NOT IN (?)", "cancelled").Find(&users)
+// SELECT * FROM users WHERE state = 'active';
+// SELECT * FROM orders WHERE user_id IN (1,2) AND state NOT IN ('cancelled');
+
+
+
+
+
+Custom Preloading SQL
+db.Preload("Orders", func(db *gorm.DB) *gorm.DB {
+  return db.Order("orders.amount DESC")
+}).Find(&users)
+// SELECT * FROM users;
+// SELECT * FROM orders WHERE user_id IN (1,2,3,4) order by orders.amount DESC;
+
+-------------------------------------------------------- Associação de Polimorfismo ------------------------------------------------------- 
+GORM suporta associação de polimorfismo DE UM para VÁRIOS, ele salvará o nome da tabela da entidade propriedade no campo do tipo polimórfico, a chave primária no campo polimórfico 
+
+
+type Cat struct {
+  ID    int
+  Name  string
+  Toy   Toy `gorm:"polymorphic:Owner;"`
+}
+
+type Dog struct {
+  ID   int
+  Name string
+  Toy  Toy `gorm:"polymorphic:Owner;"`
+}
+
+type Toy struct {
+  ID        int
+  Name      string
+  OwnerID   int
+  OwnerType string
+}
+
+db.Create(&Dog{Name: "dog1", Toy: Toy{Name: "toy1"}})
+// INSERT INTO `dogs` (`name`) VALUES ("dog1")
+// INSERT INTO `toys` (`name`,`owner_id`,`owner_type`) VALUES ("toy1","1","dogs")
+Insere um brinquedo com Name "dog1", com Name "toy1", do tipo "dogs"
+
+
+
+
+--> Você pode alterar o valor do tipo polimórfico com a tag polymorphicValue, por exemplo: 
+type Dog struct {
+  ID   int
+  Name string
+  Toy  Toy `gorm:"polymorphic:Owner;polymorphicValue:master"`
+}
+
+type Toy struct {
+  ID        int
+  Name      string
+  OwnerID   int
+  OwnerType string
+}
+
+db.Create(&Dog{Name: "dog1", Toy: Toy{Name: "toy1"}})
+// INSERT INTO `dogs` (`name`) VALUES ("dog1")
+// INSERT INTO `toys` (`name`,`owner_id`,`owner_type`) VALUES ("toy1","1","master")
 
 
 ------------------------------------------------------------------ CREATE ------------------------------------------------------------------
@@ -44,18 +391,30 @@ db.Omit(clause.Associations).Create(&user)
 db.First(&user)
 // SELECT * FROM users ORDER BY id LIMIT 1;
 
-db.Take(&user)
-// SELECT * FROM users LIMIT 1;
 
-db.Last(&user)
-// SELECT * FROM users ORDER BY id DESC LIMIT 1;
 
-result := db.First(&user)
-result.RowsAffected // returns found records count
-result.Error        // returns error
 
-// check error ErrRecordNotFound
-errors.Is(result.Error, gorm.ErrRecordNotFound)
+
+SMART QUERY
+type User struct {
+  ID     uint
+  Name   string
+  Age    int
+  Gender string
+  // hundreds of fields
+}
+
+type APIUser struct {
+  ID   uint
+  Name string
+}
+
+// Select `id`, `name` automatically when querying
+db.Model(&User{}).Limit(10).Find(&APIUser{})
+// SELECT `id`, `name` FROM `users` LIMIT 10
+
+
+
 
 
 
@@ -154,34 +513,107 @@ db.Order("age desc, name").Find(&users)
 
 
 
-LIMIT
-db.Limit(3).Find(&users)
-// SELECT * FROM users LIMIT 3;
-
-
-Offset specify the number of records to skip before starting to return the records
-db.Offset(3).Find(&users)
-// SELECT * FROM users OFFSET 3;
+db.Where(
+  db.Where("pizza = ?", "pepperoni").Where(db.Where("size = ?", "small").Or("size = ?", "medium")),
+).Or(
+  db.Where("pizza = ?", "hawaiian").Where("size = ?", "xlarge"),
+).Find(&Pizza{}).Statement
+// SELECT * FROM `pizzas` WHERE (pizza = "pepperoni" AND (size = "small" OR size = "medium")) OR (pizza = "hawaiian" AND size = "xlarge")
 
 
 
-Group & Having
-type result struct {
-  Date  time.Time
-  Total int
-}
+// User not found, create a new record with give conditions
+db.FirstOrCreate(&user, User{Name: "non_existing"})
+// INSERT INTO "users" (name) VALUES ("non_existing");
+// user -> User{ID: 112, Name: "non_existing"}
 
-db.Model(&User{}).Select("name, sum(age) as total").Where("name LIKE ?", "group%").Group("name").First(&result)
-// SELECT name, sum(age) as total FROM `users` WHERE name LIKE "group%" GROUP BY `name`
-
-
-db.Model(&User{}).Select("name, sum(age) as total").Group("name").Having("name = ?", "group").Find(&result)
-// SELECT name, sum(age) as total FROM `users` GROUP BY `name` HAVING name = "group"
+// Found user with `name` = `jinzhu`
+db.Where(User{Name: "jinzhu"}).FirstOrCreate(&user)
+// user -> User{ID: 111, Name: "jinzhu", "Age": 18}
 
 
-Selecting distinct values from the model
-db.Distinct("name", "age").Order("name, age desc").Find(&results)
+// User not found, create it with give conditions and Attrs
+db.Where(User{Name: "non_existing"}).Attrs(User{Age: 20}).FirstOrCreate(&user)
+// SELECT * FROM users WHERE name = 'non_existing' ORDER BY id LIMIT 1;
+// INSERT INTO "users" (name, age) VALUES ("non_existing", 20);
+// user -> User{ID: 112, Name: "non_existing", Age: 20}
 
+
+Get matched records count
+var count int64
+db.Model(&User{}).Where("name = ?", "jinzhu").Or("name = ?", "jinzhu 2").Count(&count)
+// SELECT count(1) FROM users WHERE name = 'jinzhu' OR name = 'jinzhu 2'
+
+------------------------------------------------------------------ UPDATE ------------------------------------------------------------------
+db.Save(&user)
+// UPDATE users SET name='jinzhu 2', age=100, birthday='2016-01-01', updated_at = '2013-11-17 21:34:10' WHERE id=111;
+
+
+
+** Se liga no que está no model 
+&User --> modelo da database
+&user --> os dados que eu tenho no formulario
+Update single column
+db.Model(&User{}).Where("active = ?", true).Update("name", "hello")
+// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE active=true;
+
+db.Model(&user).Update("name", "hello")
+// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE id=111;
+
+db.Model(&user).Where("active = ?", true).Update("name", "hello")
+// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE id=111 AND active=true;
+
+
+
+Updates Multiplos
+// Update attributes with `struct`, will only update non-zero fields
+db.Model(&user).Updates(User{Name: "hello", Age: 18, Active: false})
+// UPDATE users SET name='hello', age=18, updated_at = '2013-11-17 21:34:10' WHERE id = 111;
+
+
+
+Update de campos selecionados
+db.Model(&user).Select("name").Updates(map[string]interface{}{"name": "hello", "age": 18, "active": false})
+// UPDATE users SET name='hello' WHERE id=111;
+
+db.Model(&user).Omit("name").Updates(map[string]interface{}{"name": "hello", "age": 18, "active": false})
+// UPDATE users SET age=18, active=false, updated_at='2013-11-17 21:34:10' WHERE id=111;
+
+
+SQL Expression
+db.Model(&product).UpdateColumn("quantity", gorm.Expr("quantity - ?", 1))
+// UPDATE "products" SET "quantity" = quantity - 1 WHERE "id" = 3;
+
+
+SubQuery
+db.Model(&user).Update("company_name", db.Model(&Company{}).Select("name").Where("companies.id = users.company_id"))
+// UPDATE "users" SET "company_name" = (SELECT name FROM companies WHERE companies.id = users.company_id);
+
+------------------------------------------------------------------ DELETE ------------------------------------------------------------------
+db.Delete(&email)
+// DELETE from emails where id = 10;
+
+db.Where("name = ?", "jinzhu").Delete(&email)
+// DELETE from emails where id = 10 AND name = "jinzhu";
+
+db.Delete(Email{}, "email LIKE ?", "%jinzhu%")
+// DELETE from emails where email LIKE "%jinzhu%";
+
+SOFT DELETE
+db.Delete(&user)
+// UPDATE users SET deleted_at="2013-10-29 10:23" WHERE id = 111;
+
+db.Where("age = ?", 20).Delete(&User{})
+// UPDATE users SET deleted_at="2013-10-29 10:23" WHERE age = 20;
+
+// Soft deleted records will be ignored when querying
+db.Where("age = 20").Find(&user)
+// SELECT * FROM users WHERE age = 20 AND deleted_at IS NULL;
+
+
+You can find soft deleted records with Unscoped
+db.Unscoped().Where("age = 20").Find(&users)
+// SELECT * FROM users WHERE age = 20;
 ------------------------------------------------------------------ HOOKS ------------------------------------------------------------------
  (AÇÕES ANTES/DEPOIS DA AÇÃO NO BANCO DE DADOS)
 PODE TER EM TUDO NO CRUD
@@ -196,4 +628,26 @@ If you want to skip Hooks methods, you can use the SkipHooks session mode, for e
 DB.Session(&gorm.Session{SkipHooks: true}).Create(&user)
 
 
+---------------------------------------------------------------- Pagination ----------------------------------------------------------------
+func Paginate(r *http.Request) func(db *gorm.DB) *gorm.DB {
+  return func (db *gorm.DB) *gorm.DB {
+    page, _ := strconv.Atoi(r.Query("page"))
+    if page == 0 {
+      page = 1
+    }
 
+    pageSize, _ := strconv.Atoi(r.Query("page_size"))
+    switch {
+    case pageSize > 100:
+      pageSize = 100
+    case pageSize <= 0:
+      pageSize = 10
+    }
+
+    offset := (page - 1) * pageSize
+    return db.Offset(offset).Limit(pageSize)
+  }
+}
+
+db.Scopes(Paginate(r)).Find(&users)
+db.Scopes(Paginate(r)).Find(&articles)

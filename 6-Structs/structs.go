@@ -13,6 +13,22 @@ type endereco struct {
 	numero     uint8
 }
 
+/////////////////// Ponteiros receptores de método ///////////////////
+// A grande diferença é que, se você definir um método com um receptor do valor,
+// você NÃO vai conseguir fazer alterações na instância daquele tipo no qual o método foi definido.
+// Se quisermos alterar a instância da variável, precisaremos defini-los como um receptor pointer:
+type Creature struct {
+	Species string
+}
+
+func (c Creature) Alter() {
+	c.Species = ""
+}
+
+func (c *Creature) AlterPointer() {
+	c.Species = "Dinossauro"
+}
+
 func main() {
 	var u usuario
 	u.nome = "Iago"
@@ -28,5 +44,14 @@ func main() {
 	// Caso eu não tenha todos os dados
 	usuario3 := usuario{idade: 32, endereco: endereco}
 	fmt.Println(usuario3)
+
+	// Ponteiros
+	var creature Creature = Creature{Species: "shark"}
+
+	fmt.Printf("1) %+v\n", creature)
+	creature.Alter()
+	fmt.Printf("2) %+v\n", creature)
+	creature.AlterPointer()
+	fmt.Printf("3) %+v\n", creature)
 
 }
