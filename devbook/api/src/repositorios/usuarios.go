@@ -113,3 +113,40 @@ func (repositorio Usuarios) Atualizar(ID uint64, usuario modelos.Usuario) error 
 
 	return nil
 }
+
+// Deletar exclui um usuario no banco de dados
+func (repositorio Usuarios) Deletar(ID uint64) error {
+	statement, err := repositorio.db.Prepare(
+		"delete from usuarios where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// BuscarPorEmail busca o usuario por email e retorna o id e senha com hash
+func (repositorio Usuarios) BuscarPorEmail(email string) (modelos.Usuario, error) {
+	linha, err := repositorio.db.Query(
+		"select id, senha from usuarios where email = ?", email)
+	if err != nil {
+		return modelos.Usuario{}, err
+	}
+	defer linha.Close()
+
+	var usuario modelos.Usuario
+
+	if linha.Next() {
+		if err = linha.Scan(&usuario.ID, &usuario.Senha); err != nil {
+			return modelos.Usuario{}, err
+		}
+	}
+
+	return usuario, nil
+}
