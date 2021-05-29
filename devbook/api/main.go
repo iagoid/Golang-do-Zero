@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/src/config"
 	"api/src/router"
 	"fmt"
 	"log"
@@ -8,8 +9,9 @@ import (
 )
 
 func main() {
-	fmt.Println("Rodando API")
-
+	config.Carregar()
+	fmt.Println("Banco: ", config.StringConexaoBanco)
 	r := router.Gerar()
-	log.Fatal(http.ListenAndServe(":8080", r))
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Porta), r))
 }

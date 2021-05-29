@@ -25,7 +25,7 @@ func alunoAprovado(n1, n2 float32) bool {
 /*
 	DEFER adia a execução da função até o ultimo momento possivel
 	(no caso o fim da função main)
-	Em casos de funçoes com return ele executão a função adiada antes do retorno
+	Em casos de funçoes com return ele executa a função adiada antes do retorno
 */
 func main() {
 	defer funcao1()
