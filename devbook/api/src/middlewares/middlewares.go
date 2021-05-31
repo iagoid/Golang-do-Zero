@@ -1,23 +1,27 @@
 package middlewares
 
 import (
-	"fmt"
+	"api/src/autenticacao"
+	"api/src/respostas"
 	"log"
 	"net/http"
 )
 
 // Logger escreve informações sobre a rota
-func Logger(next http.HandlerFunc) http.HandlerFunc {
+func Logger(proximaFuncao http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("\n %s %s%s", r.Method, r.Host, r.RequestURI)
-		next(w, r) // Executa a função que vem por parametro
+		proximaFuncao(w, r)
 	}
 }
 
 // Autenticar verifica se o usuário que faz a requisição esta autentcado
-func Autenticar(next http.HandlerFunc) http.HandlerFunc {
+func Autenticar(proximaFuncao http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Validando...")
-		next(w, r) // Executa a função que vem por parametro
+		if err := autenticacao.ValidarToken(r); err != nil {
+			respostas.Erro(w, http.StatusUnauthorized, err)
+			return
+		}
+		proximaFuncao(w, r)
 	}
 }
