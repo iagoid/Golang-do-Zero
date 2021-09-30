@@ -40,8 +40,8 @@ func escrever(texto string, canal chan string) {
 	for i := 0; i < 5; i++ {
 		// Manda o valor para dentro do canal
 		fmt.Println("Dentro do for")
-		canal <- texto
-		// O canal não espera chegar em outro for
+		canal <- fmt.Sprint(texto, i)
+		// O canal não espera chegar em outro for, enviando a mensagem antes
 		time.Sleep((time.Second) * 3)
 	}
 	// Indica que o canal não envia/recebe dados

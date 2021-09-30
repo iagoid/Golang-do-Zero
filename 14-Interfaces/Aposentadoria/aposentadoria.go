@@ -16,6 +16,7 @@ type homem struct {
 }
 
 func (h homem) aposentado() bool {
+	fmt.Print(h.nome)
 	return h.idade >= 65
 }
 
@@ -24,11 +25,12 @@ type mulher struct {
 }
 
 func (m mulher) aposentado() bool {
+	fmt.Print(m.nome)
 	return m.idade >= 60
 }
 
 func verificaAposentadoria(p pessoas) {
-	fmt.Println("Está aposentado(a)?", p.aposentado())
+	fmt.Println(" está aposentado(a)? ", p.aposentado())
 }
 
 func main() {
