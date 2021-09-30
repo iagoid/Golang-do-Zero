@@ -9,9 +9,14 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
-type DataRequest struct {
+type User struct {
 	Email string `json:"email" validate:"required"`
 	Name  string `json:"name" validate:"required"`
+}
+
+type Car struct {
+	Model string `json:"model" validate:"required"`
+	Year  uint   `json:"year" validate:"required"`
 }
 
 type ValidationError struct {
@@ -23,30 +28,52 @@ func main() {
 	r := gin.Default()
 
 	r.POST("/user", func(c *gin.Context) {
-		var q DataRequest
+		var q User
 		err := c.BindJSON(&q)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "error to bind"})
 			return
 		}
 
-		err = validator.New().Struct(q)
-		if err != nil {
-			var verr validator.ValidationErrors
-
-			if errors.As(err, &verr) {
-				c.JSON(http.StatusBadRequest, gin.H{"errors": Descriptive(verr)})
-				return
-			}
-
-			// Outro tipo de erro, como json como json mal formado, ext
-			c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		if !IsValidData(c, q) {
 			return
 		}
+
+		c.Status(http.StatusAccepted)
+	})
+	r.POST("/car", func(c *gin.Context) {
+		var q Car
+		err := c.BindJSON(&q)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "error to bind"})
+			return
+		}
+
+		if !IsValidData(c, q) {
+			return
+		}
+
 		c.Status(http.StatusAccepted)
 	})
 
 	r.Run()
+}
+
+func IsValidData(c *gin.Context, i interface{}) bool {
+	err := validator.New().Struct(i)
+	if err != nil {
+		var verr validator.ValidationErrors
+
+		if errors.As(err, &verr) {
+			c.JSON(http.StatusBadRequest, gin.H{"errors": Descriptive(verr)})
+			return false
+		}
+
+		// Outro tipo de erro, como json como json mal formado, ext
+		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		return false
+	}
+	return true
 }
 
 // Nomes nos campo
