@@ -2,6 +2,7 @@ package modelos
 
 import (
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -17,15 +18,15 @@ type Publicacao struct {
 }
 
 // Preparar vai chamar os metodos para validar e formatar o usuario
-func (usuario *Publicacao) Preparar(etapa string) error {
-	if err := usuario.validar(etapa); err != nil {
+func (usuario *Publicacao) Preparar() error {
+	if err := usuario.validar(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (usuario *Publicacao) validar(etapa string) error {
+func (usuario *Publicacao) validar() error {
 	if usuario.Titulo == "" {
 		return errors.New("O titulo é obrigatório e não pode estar em branco")
 	}
@@ -33,6 +34,15 @@ func (usuario *Publicacao) validar(etapa string) error {
 	if usuario.Conteudo == "" {
 		return errors.New("O conteudo é obrigatório e não pode estar em branco")
 	}
+
+	usuario.formatar()
+
+	return nil
+}
+
+func (usuario *Publicacao) formatar() error {
+	usuario.Titulo = strings.TrimSpace(usuario.Titulo)
+	usuario.Conteudo = strings.TrimSpace(usuario.Conteudo)
 
 	return nil
 }

@@ -24,6 +24,7 @@ func CriarToken(usuarioID uint64) (string, error) {
 
 //ValidarToken verifica se o token passado na requisição é valido
 func ValidarToken(r *http.Request) error {
+
 	tokenString := extrairToken(r)
 	token, err := jwt.Parse(tokenString, retornarChaveDeVerificacao)
 	if err != nil {
@@ -60,7 +61,6 @@ func extrairToken(r *http.Request) string {
 	if len(strings.Split(token, " ")) == 2 {
 		return strings.Split(token, " ")[1]
 	}
-
 	return ""
 }
 

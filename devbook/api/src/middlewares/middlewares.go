@@ -15,7 +15,7 @@ func Logger(proximaFuncao http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// Autenticar verifica se o usuário que faz a requisição esta autentcado
+// Autenticar verifica se o usuário que faz a requisição esta autenticado
 func Autenticar(proximaFuncao http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := autenticacao.ValidarToken(r); err != nil {
