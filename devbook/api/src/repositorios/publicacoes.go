@@ -103,7 +103,7 @@ func (repositorio Publicacoes) Deletar(ID uint64) error {
 	return nil
 }
 
-// BuscarPorAutor: traz todos os publicacaos dos usuarios que atendem um filtro de id
+// BuscarPorAutor: traz todos os publicacaos dos usuarios que atendem um filtro de id do autor
 func (repositorio Publicacoes) BuscarPorAutor(autor_id uint64) ([]modelos.Publicacao, error) {
 	linhas, err := repositorio.db.Query(
 		`select p.id, titulo, conteudo, autor_id, curtidas, criadaEm, u.nick from publicacoes p
@@ -145,7 +145,7 @@ func (repositorio Publicacoes) BuscarPublicacoes(usuarioID uint64) ([]modelos.Pu
 		inner join usuarios u ON u.id = p.autor_id
 		left join seguidores s ON p.autor_id = s.usuario_id
 		where u.id = ? or s.seguidor_id = ?
-		order by 1`,
+		order by 1 DESC`,
 		usuarioID, usuarioID)
 	if err != nil {
 		return nil, err
