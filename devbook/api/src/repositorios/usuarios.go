@@ -271,15 +271,15 @@ func (repositorio Usuarios) BuscarSenha(usuarioID uint64) (string, error) {
 
 // AtualizarSenha atualiza a senha do usuario
 func (repositorio Usuarios) AtualizarSenha(usuarioID uint64, senha string) error {
-	statemant, err := repositorio.db.Prepare(
+	statement, err := repositorio.db.Prepare(
 		`update usuarios set senha = ? where id = ?`,
 	)
 	if err != nil {
 		return err
 	}
-	defer statemant.Close()
+	defer statement.Close()
 
-	if _, err := statemant.Exec(senha, usuarioID); err != nil {
+	if _, err := statement.Exec(senha, usuarioID); err != nil {
 		return err
 	}
 
