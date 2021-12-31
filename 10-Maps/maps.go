@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 func main() {
 	// O map é muito dependente do tipo que ele foi declarado
@@ -34,5 +37,36 @@ func main() {
 	}
 
 	fmt.Println(usuario2)
+
+	//////////////////////////////////////////////////
+	// Ordenar map
+	unSortedMap := map[string]int{"India": 20, "Canada": 70, "Germany": 15}
+
+	// pega os valores do map
+	values := make([]int, 0, len(unSortedMap))
+
+	for _, v := range unSortedMap {
+		values = append(values, v)
+	}
+
+	// Ordena os valores
+	sort.Ints(values)
+
+	for _, v := range values {
+		fmt.Print(v, " - ")
+	}
+
+	// Ordena as chaves
+
+	keys := make([]string, 0, len(unSortedMap))
+
+	for k := range unSortedMap {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		fmt.Println(k, unSortedMap[k])
+	}
 
 }

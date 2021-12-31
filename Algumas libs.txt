@@ -1,0 +1,10 @@
+Gin, Gorm, Vaidatorv10
+
+
+https://github.com/tidwall/gjson     <-- Pegar valores do json sem ter que passar para um struct
+https://github.com/golang/mock       <-- Fazer mocks com o go
+https://github.com/jaypipes/ghw      <-- Hardware
+
+
+https://go.dev/doc/database/cancel-operations
+https://go.dev/doc/database/manage-connections

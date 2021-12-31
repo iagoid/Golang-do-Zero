@@ -7,7 +7,7 @@ import (
 
 func main() {
 	canal := make(chan string)
-	go escrever("Olá mundo", canal)
+	go escrever("Olá mundo ", canal)
 	fmt.Println("Depois da funçao escrever ser chamada")
 	// Espera que  o canal receber um valor
 	// Só vai para outra linha quando o valor é passado
