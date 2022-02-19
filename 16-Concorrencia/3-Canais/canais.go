@@ -31,6 +31,9 @@ func main() {
 	for mensagem := range canal {
 		fmt.Println(mensagem)
 	}
+	fmt.Println("--------------------------------")
+	thred()
+
 	fmt.Println("----- Programa finalizado ------")
 
 }
@@ -46,4 +49,15 @@ func escrever(texto string, canal chan string) {
 	}
 	// Indica que o canal não envia/recebe dados
 	close(canal)
+}
+
+func thred() {
+	hello := make(chan string)
+
+	go func() {
+		hello <- "Thred"
+	}()
+
+	result := <-hello
+	fmt.Println(result)
 }

@@ -6,7 +6,7 @@ import (
 
 func main() {
 	// O canal tem uma capacidade de 3
-	// Ele só bloquia quando atinge a capacidade máxima
+	// Ele só bloqueia quando atinge a capacidade máxima
 	canal := make(chan string, 3)
 
 	canal <- "Primeira mensagem"

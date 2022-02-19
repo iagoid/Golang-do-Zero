@@ -1,0 +1,22 @@
+https://aprendagolang.com.br/2022/01/19/a-diferenca-entre-array-e-slice/
+
+Um array é um tipo de dado composto, de tamanho fixo com zero ou mais elementos de um tipo específico. Por ter tamanho fixo, raramente vemos o uso de arrays em programas Go.
+
+Um slice é um tipo composto de tamanho variável cujos elementos são do mesmo tipo. Diferente do array, um slice não tem um tamanho fixo, o que o faz ser muito mais útil, de modo geral, do que o array.
+Um slice é composto por três componentes básicos. Um ponteiro, seu tamanho e sua capacidade. Podemos inicializar um slice de quatro formas.
+Como um slice contém um ponteiro para um array interno, passar um slice como parâmetro de uma função permite que a função modifique os elementos do slice.
+
+
+Por isso, quando passamos o slice para uma função, teoricamente não precisamos receber seu retorno, já que as mudanças já se refletiram no slice original.
+
+Um cuidado muito grande que devemos tomar, é que se dois slices apontarem para o mesmo array, qualquer um deles que tenha seu valor modificado irá refletir no outro.
+
+slice := []int{1, 2, 3, 4, 5}
+a := slice[:3]
+b := slice[2:]
+
+slice[2] = 99
+	
+fmt.Println(a, b) // [1 2 99] [99 4 5]
+
+Diferente dos arrays, slices não são comparáveis utilizando == ou !=. Para comparar um slice, é preciso fazer um looping e comparar manualmente item por item.
