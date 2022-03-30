@@ -1,0 +1,4 @@
+https://www.joaovanzuita.space/blog/go-lang-teste-unitario-com-http-mock
+
+https://www.reddit.com/r/golang/						<---- Forum
+
