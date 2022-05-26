@@ -12,3 +12,12 @@ https://atlasgo.io/
 
 
 https://github.com/fyne-io/fyne
+https://github.com/varbhat/exatorrent
+https://github.com/dgraph-io/ristretto    	https://github.com/bluele/gcache	---> Cache
+https://github.com/ynori7/trytryagain		---> Tentar novamente uma função
+https://github.com/anaskhan96/soup			--> Scrapper
+https://github.com/sajari/docconv			--> Converter textos para txt, pdf, etc
+https://github.com/yangwenmai/learning-golang
+
+https://github.com/goki/github				--> Interface grafica 2d e 3D
+https://github.com/jinzhu/copier			--> Copia de campos para outros campos

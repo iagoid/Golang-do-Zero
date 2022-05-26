@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Editar Usuário</title>
+
+    <link rel="stylesheet" href="/assets/css/bootstrap.css">
+</head>
+
+<body>
+
+    {{ template "cabecalho" }}
+    <div class="container-fluid">
+        <div class="row mt-4">
+            <div class="col-12">
+                <h3>Editar Dados</h3>
+                <form id="editar-usuario">
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" class="form-control" name="nome" id="nome" placeholder="Insira seu nome"
+                            value="{{ .Nome }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="text" class="form-control" name="email" id="email" placeholder="Insira seu email"
+                            value="{{ .Email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nick">Nick</label>
+                        <input type="text" class="form-control" name="nick" id="nick" placeholder="Insira seu nick"
+                            value="{{ .Nick }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-info">Editar Dados</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+{{ template "rodape" }}
+{{ template "scripts" }}
+<script src="/assets/js/usuario.js"></script>
+
+</html>
