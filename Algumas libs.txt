@@ -9,6 +9,9 @@ https://github.com/jaypipes/ghw      <-- Hardware
 https://go.dev/doc/database/cancel-operations
 https://go.dev/doc/database/manage-connections
 https://atlasgo.io/
+https://github.com/robertkrimen/otto			<--- INTERPRETADOR JAVASCRIPT
+https://github.com/go-echarts/go-echarts 		<--- Gráficos
+https://github.com/fatih/structs				<--- Utilitário para structs
 
 
 https://github.com/fyne-io/fyne
