@@ -10,14 +10,20 @@ func main() {
 
 	for i < 5 {
 		i++
-		fmt.Println("Incremento i: ", i)
-		time.Sleep(time.Second)
+		fmt.Printf("Incremento %d - ", i)
 	}
+	fmt.Println()
 
 	for j := 1; j <= 5; j++ {
-		fmt.Println("Incremento j: ", j)
-		time.Sleep(time.Second)
+		if j == 4 {
+			break
+		}
+		if j == 1 || j == 2 {
+			continue
+		}
+		fmt.Printf("Incremento %d - ", j)
 	}
+	fmt.Println()
 
 	// Arrays
 	nomes := [3]string{"Iago", "Lucas", "Pedro"}

@@ -56,12 +56,12 @@ func diaDaSemana(numero int) string {
 
 func fimDeSemana(numero int) string {
 	var dia string
-	switch {
-	case numero == 1:
+	switch numero {
+	case 1:
 		dia = "Domingo"
 		fallthrough // Pega a proxima condição
 
-	case numero == 7:
+	case 7:
 		dia = "Sábado"
 		fallthrough // Pega a proxima condição
 
@@ -81,4 +81,5 @@ func main() {
 
 	dia3 := fimDeSemana(7)
 	fmt.Println(dia3)
+
 }
