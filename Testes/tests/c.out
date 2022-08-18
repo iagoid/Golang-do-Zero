@@ -1,0 +1,4 @@
+mode: set
+tests/odd.go:8.32,9.18 1 1
+tests/odd.go:12.2,12.19 1 1
+tests/odd.go:9.18,11.3 1 1

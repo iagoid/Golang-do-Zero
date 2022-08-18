@@ -11,6 +11,10 @@ func calculosMatematicos(n1 int8, n2 int8) (int8, int8, int8, int8) {
 	return n1 + n2, n1 - n2, n1 * n2, n1 / n2
 }
 
+func mostrarNaTela(f func(string)) {
+	f("Função que recebe outra função")
+}
+
 func main() {
 	soma := somar(10, 15)
 	fmt.Println(soma)
@@ -21,6 +25,7 @@ func main() {
 	}
 
 	f("TEXTO NA FUNÇÃO F")
+	mostrarNaTela(f)
 
 	// Caso eu não queira utilizar o valor eu coloco _
 	_, subtracao, multiplicacao, divisao := calculosMatematicos(10, 15)

@@ -51,4 +51,13 @@ func main() {
 	var err error = errors.New("Erro interno")
 	fmt.Println(err)
 
+	casosEspecificaos()
+}
+
+// Repare que ao incrementar um numero após seu limite o contador volta a ser 0
+func casosEspecificaos() {
+	var numero uint8 = 255
+
+	numero++
+	fmt.Println(numero)
 }

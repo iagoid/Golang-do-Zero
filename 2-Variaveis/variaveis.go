@@ -2,6 +2,8 @@ package main
 
 import "fmt"
 
+var variavel7 = "Variavel de escopo do pacote"
+
 func main() {
 	// Duas maneiras de declarar uma variavel
 	var variavel1 string = "Variável 1"
@@ -28,6 +30,10 @@ func main() {
 	fmt.Println(variavel5 + variavel6)
 
 	// Quando quero mostrar ummesmo valor varias vezes no print
-	fmt.Printf("%v %v --- %[1]v %[2]v", variavel1, variavel2)
+	fmt.Printf("%v %v --- %[1]v %[2]v\n", variavel1, variavel2)
+
+	fmt.Println(variavel7)
+	var variavel7 = "Variavel 7"
+	fmt.Println(variavel7) //shadowing
 
 }

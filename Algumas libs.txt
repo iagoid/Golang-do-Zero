@@ -1,5 +1,7 @@
 Gin, Gorm, Vaidatorv10
 
+https://gophercises.com/#signup		<-- Exercicios resolvidos em go
+
 
 https://github.com/tidwall/gjson     <-- Pegar valores do json sem ter que passar para um struct
 https://github.com/golang/mock       <-- Fazer mocks com o go
@@ -24,3 +26,6 @@ https://github.com/yangwenmai/learning-golang
 
 https://github.com/goki/github				--> Interface grafica 2d e 3D
 https://github.com/jinzhu/copier			--> Copia de campos para outros campos
+
+
+https://github.com/emirpasic/gods			--> Implementações de estrutura de dados
