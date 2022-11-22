@@ -3,9 +3,10 @@ Gin, Gorm, Vaidatorv10
 https://gophercises.com/#signup		<-- Exercicios resolvidos em go
 
 
-https://github.com/tidwall/gjson     <-- Pegar valores do json sem ter que passar para um struct
-https://github.com/golang/mock       <-- Fazer mocks com o go
-https://github.com/jaypipes/ghw      <-- Hardware
+https://github.com/tidwall/gjson     			<-- Pegar valores do json sem ter que passar para um struct
+https://github.com/golang/mock       			<-- Fazer mocks com o go
+https://github.com/jaypipes/ghw      			<-- Hardware
+https://github.com/victorfernandesraton/cepgo 	<-- Consulta de cep
 
 
 https://go.dev/doc/database/cancel-operations
