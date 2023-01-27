@@ -29,7 +29,7 @@ func main() {
 	variavel5, variavel6 = variavel6, variavel5
 	fmt.Println(variavel5 + variavel6)
 
-	// Quando quero mostrar ummesmo valor varias vezes no print
+	// Quando quero mostrar um mesmo valor varias vezes no print
 	fmt.Printf("%v %v --- %[1]v %[2]v\n", variavel1, variavel2)
 
 	fmt.Println(variavel7)

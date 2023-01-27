@@ -23,3 +23,5 @@ https://github.com/teivah/100-go-mistakes
 
 
 https://aprendagolang.com.br/2022/05/20/como-utilizar-go-chi-para-rotas-e-middleware/
+
+https://threedots.tech/post/list-of-recommended-libraries/
