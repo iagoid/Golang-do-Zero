@@ -1,13 +1,16 @@
 Gin, Gorm, Vaidatorv10
 
 https://gophercises.com/#signup		<-- Exercicios resolvidos em go
-
+https://dev.to/siddheshk02/caching-in-golang-176j?utm_source=substack&utm_medium=email
+https://eltonminetto.dev/post/2022-08-31-improve-local-development-tilt/?utm_source=substack&utm_medium=email
+https://github.com/michenriksen/gokiburi?utm_source=substack&utm_medium=email
+https://dev.to/mavensingh/learn-golang-by-building-a-2d-snake-game-a-complete-guide-4mpf?utm_source=dormosheio&utm_campaign=dormosheio&utm_medium=email
 
 https://github.com/tidwall/gjson     			<-- Pegar valores do json sem ter que passar para um struct
 https://github.com/golang/mock       			<-- Fazer mocks com o go
 https://github.com/jaypipes/ghw      			<-- Hardware
 https://github.com/victorfernandesraton/cepgo 	<-- Consulta de cep
-
+https://github.com/radovskyb/watcher
 
 https://go.dev/doc/database/cancel-operations
 https://go.dev/doc/database/manage-connections
