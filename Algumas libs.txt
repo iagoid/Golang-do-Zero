@@ -1,5 +1,6 @@
 Gin, Gorm, Vaidatorv10
 
+https://github.com/fyne-io/fyne
 https://gophercises.com/#signup		<-- Exercicios resolvidos em go
 https://dev.to/siddheshk02/caching-in-golang-176j?utm_source=substack&utm_medium=email
 https://eltonminetto.dev/post/2022-08-31-improve-local-development-tilt/?utm_source=substack&utm_medium=email
